@@ -8,7 +8,7 @@ embeddings_path = embeddings_dir + embedding_filename
 
 metadata = load_data(resource_dir + "metadata.pkl")
 word_to_index = metadata['word_to_index']
-embedding_dimension = 300
+embedding_dimension = 100
 
 embeddings_index = {}
 
@@ -43,4 +43,4 @@ print("Created", embedding_dimension, "dimensional embeddings from", embeddings_
 
 data = dict(embedding_matrix=embedding_matrix)
 
-save_data(embeddings_dir + embedding_filename.split(".")[0] + ".pkl", data)
+save_data(embeddings_dir + wordvec_type + "_" + embedding_filename.split("_")[1] + "_" + str(embedding_dimension) + "dim.pkl", data)

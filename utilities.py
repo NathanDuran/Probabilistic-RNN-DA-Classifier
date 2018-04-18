@@ -108,11 +108,10 @@ def generate_embeddings(data, metadata, verbose=False):
     return utterance_embeddings, label_embeddings
 
 
-def generate_bayes_embeddings(data, metadata, verbose=False):
+def generate_bayes_embeddings(data, frequency_data, metadata, verbose=False):
 
-    word_freq_data = load_data("data/word_freq.pkl")
-    freq_words = word_freq_data['freq_words']
-    freq_prob_matrix = word_freq_data['freq_prob_matrix']
+    freq_words = frequency_data['freq_words']
+    probability_matrix = frequency_data['probability_matrix']
 
     word_to_index = metadata['word_to_index']
     max_utterance_len = metadata['max_utterance_len']
@@ -133,7 +132,7 @@ def generate_bayes_embeddings(data, metadata, verbose=False):
             word = utterances[i][j]
             if word in freq_words:
 
-                utterance_embeddings[i][j] = freq_prob_matrix[word_to_index[word]]
+                utterance_embeddings[i][j] = probability_matrix[word_to_index[word]]
 
         tmp_label_embeddings.append(label_to_index[labels[i]])
 
