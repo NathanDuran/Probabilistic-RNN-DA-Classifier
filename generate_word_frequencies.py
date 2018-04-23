@@ -2,7 +2,8 @@ import nltk
 from utilities import *
 
 resource_dir = 'data/'
-freq_thresh = 15
+embeddings_dir = "embeddings/"
+freq_thresh = 2
 
 # Split into labels and sentences
 text_data = read_file(resource_dir + "all_text.txt")
@@ -25,13 +26,13 @@ print("Vocabulary Size: ", len(vocabulary))
 labels = metadata['labels']
 print("Number of  labels: ", len(labels))
 
-# Get most frequent words
+# Get words >= threshold
 freq_words = []
 for word in vocabulary:
     if word[1] >= freq_thresh:
         freq_words.append(word[0])
 
-print("Most frequent words: ", len(freq_words))
+print("Number of words over frequency threshold: ", len(freq_words))
 
 word_count_matrix = np.zeros((len(freq_words), len(labels)), dtype=int)
 for i in range(len(sentences)):
@@ -72,4 +73,4 @@ data = dict(
     freq_words=freq_words,
     probability_matrix=probability_matrix)
 
-save_data(resource_dir + "frequency_data_" + str(freq_thresh) + ".pkl", data)
+save_data(embeddings_dir + "bayes_freq_" + str(freq_thresh) + ".pkl", data)

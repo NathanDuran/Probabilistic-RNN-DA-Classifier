@@ -68,12 +68,6 @@ with open(resource_dir + 'words.txt', 'w+') as file:
 word2vec = Word2Vec(utterances, size=embedding_dimension, window=5, min_count=1, workers=2)
 word2vec.wv.save_word2vec_format(embeddings_dir + "word2vec_swda" + str(embedding_dimension) + "_dim.txt", binary=False)
 
-
-# embedding_matrix = np.zeros((len(word_to_index), embedding_dimension))
-# for word, i in word_to_index.items():
-#     if word in word2vec.wv.vocab:
-#         embedding_matrix[i] = word2vec[word][:embedding_dimension]
-
 # Count the labels and frequencies
 labels = nltk.defaultdict(int)
 for tag in da_tags:
