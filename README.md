@@ -24,14 +24,12 @@ The same training and test splits as used by [Stolcke et al. (2000)](https://web
 The development set is a subset of the training set to speed up development and testing. metadata.pkl contains
 useful pre-processed data such as vocabulary and vocabulary size, DA label to index conversion dictionary and maximum utterance length.
 
-<center>
 |Dataset    |# Transcripts  |# Utterances   |
 |-----------|:-------------:|:-------------:|
 |Training   |1115           |192,768        |
 |Development|300            |51,611         |
 |Test       |19             |4,088          |
 |Validation |21             |3,196          |
-</center>
 
 ## Usage
 #### Traditional Word Embeddings
