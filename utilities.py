@@ -108,7 +108,7 @@ def generate_embeddings(data, metadata, verbose=False):
     return utterance_embeddings, label_embeddings
 
 
-def generate_bayes_embeddings(data, frequency_data, metadata, verbose=False):
+def generate_probabilistic_embeddings(data, frequency_data, metadata, verbose=False):
 
     freq_words = frequency_data['freq_words']
     probability_matrix = frequency_data['probability_matrix']

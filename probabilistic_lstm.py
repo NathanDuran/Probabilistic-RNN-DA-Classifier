@@ -13,22 +13,22 @@ from keras.optimizers import RMSprop
 resource_dir = 'data/'
 embeddings_dir = "embeddings/"
 model_dir = 'models/'
-model_name = 'Bayes Model'
+model_name = 'Probabilistic Model'
 
 # Load metadata
 metadata = load_data(resource_dir + "metadata.pkl")
 word_frequency = 2
-frequency_data = load_data(embeddings_dir + 'bayes_freq_' + str(word_frequency) + '.pkl')
+frequency_data = load_data(embeddings_dir + 'probabilistic_freq_' + str(word_frequency) + '.pkl')
 
 # Load Training and test sets
 train_data = load_data(resource_dir + 'train_data.pkl')
-train_x, train_y = generate_bayes_embeddings(train_data, frequency_data, metadata)
+train_x, train_y = generate_probabilistic_embeddings(train_data, frequency_data, metadata)
 
 test_data = load_data(resource_dir + 'test_data.pkl')
-test_x, test_y = generate_bayes_embeddings(test_data, frequency_data, metadata)
+test_x, test_y = generate_probabilistic_embeddings(test_data, frequency_data, metadata)
 
 val_data = load_data(resource_dir + 'val_data.pkl')
-val_x, val_y = generate_bayes_embeddings(val_data, frequency_data, metadata)
+val_x, val_y = generate_probabilistic_embeddings(val_data, frequency_data, metadata)
 
 # Parameters
 vocabulary_size = metadata['vocabulary_size']

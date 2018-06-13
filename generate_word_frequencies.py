@@ -73,4 +73,4 @@ data = dict(
     freq_words=freq_words,
     probability_matrix=probability_matrix)
 
-save_data(embeddings_dir + "bayes_freq_" + str(freq_thresh) + ".pkl", data)
+save_data(embeddings_dir + "probabilistic_freq_" + str(freq_thresh) + ".pkl", data)
