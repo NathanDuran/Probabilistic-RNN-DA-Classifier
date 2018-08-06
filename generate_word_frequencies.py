@@ -3,6 +3,8 @@ from utilities import *
 
 resource_dir = 'data/'
 embeddings_dir = "embeddings/"
+
+# Threshold for minimum number of words to include in the matrix
 freq_thresh = 2
 
 # Split into labels and sentences
@@ -34,6 +36,7 @@ for word in vocabulary:
 
 print("Number of words over frequency threshold: ", len(freq_words))
 
+# Generate word count matrix
 word_count_matrix = np.zeros((len(freq_words), len(labels)), dtype=int)
 for i in range(len(sentences)):
 
@@ -43,16 +46,16 @@ for i in range(len(sentences)):
         if word in freq_words:
             word_count_matrix[word_to_index[word]][label_to_index[da_tags[i]]] += 1
 
-# Print matrix
-# print('{:15}'.format("words"), end='')
+# Print word count matrix
+# print('{:20}'.format("words"), end='')
 # for i in range(freq_matrix.shape[1]):
 #     print('{:10}'.format(labels[i][0]), end='')
 # print()
 # for i in range(freq_matrix.shape[0]):
-#     print('{:10}'.format(freq_words[i]), end='')
+#     print('{:15}'.format(freq_words[i]), end='')
 #     print('\n'.join([''.join(['{:10}'.format(item) for item in freq_matrix[i]])]))
 
-# Calculate probabilities
+# Calculate probability matrix
 probability_matrix = np.zeros((len(freq_words), len(labels)))
 for i in range(probability_matrix.shape[0]):
     word_count = vocabulary[i][1]
@@ -60,15 +63,16 @@ for i in range(probability_matrix.shape[0]):
     for j in range(probability_matrix.shape[1]):
         probability_matrix[i][j] = (100 / word_count) * word_count_matrix[i][j]
 
-# Print matrix
-print('{:15}'.format("words"), end='')
-for i in range(probability_matrix.shape[1]):
-    print('{:10}'.format(labels[i][0]), end='')
-print()
-for i in range(probability_matrix.shape[0]):
-    print('{:10}'.format(freq_words[i]), end='')
-    print('\n'.join([''.join(['{:10.2f}'.format(item) for item in probability_matrix[i]])]))
+# Print probability matrix
+# print('{:20}'.format("words"), end='')
+# for i in range(probability_matrix.shape[1]):
+#     print('{:10}'.format(labels[i][0]), end='')
+# print()
+# for i in range(probability_matrix.shape[0]):
+#     print('{:15}'.format(freq_words[i]), end='')
+#     print('\n'.join([''.join(['{:10.2f}'.format(item) for item in probability_matrix[i]])]))
 
+# Save data to file
 data = dict(
     freq_words=freq_words,
     probability_matrix=probability_matrix)

@@ -55,56 +55,56 @@ print("learning rate: ", learning_rate)
 print("Epochs: ", num_epoch)
 
 # Build the model
-print("------------------------------------")
-print('Build model...')
-model = Sequential()
-model.add(Embedding(vocabulary_size, embeddings_dimension, input_length=max_utterance_len, weights=[embedding_matrix], mask_zero=False))
-model.add(LSTM(hidden_layer, dropout=0.3, return_sequences=True, kernel_initializer='random_uniform', recurrent_initializer='glorot_uniform'))
-model.add(TimeDistributed(Dense(hidden_layer, input_shape=(max_utterance_len, hidden_layer))))
-model.add(GlobalMaxPooling1D())
-model.add(Dense(num_labels, activation='softmax'))
-
-optimizer = RMSprop(lr=learning_rate, decay=0.001)
-model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
-print(model.summary())
-
-# Train the model
-print("------------------------------------")
-print("Training model...")
-
-start_time = time.time()
-print("Training started: " + datetime.datetime.now().strftime("%b %d %T") + " for", num_epoch, "epochs")
-
-history = model.fit(train_x, train_y, epochs=num_epoch, batch_size=batch_size, validation_data=(test_x, test_y), verbose=2)
-
-# Save model and history
-model.save(model_dir + model_name + '.hdf5', overwrite=True)
-save_data(model_dir + model_name + ' History.pkl', history.history)
-
-end_time = time.time()
-print("Training took " + str(('%.3f' % (end_time - start_time))) + " seconds for", num_epoch, "epochs")
-
-# Plot history for accuracy
-plt.plot(history.history['acc'])
-plt.plot(history.history['val_acc'])
-plt.title('Accuracy - ' + model_name)
-plt.ylabel('Accuracy')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-fig = plt.gcf()
-plt.show()
-fig.savefig(model_dir + model_name + ' Accuracy.png')
-
-# Plot history for loss
-plt.plot(history.history['loss'])
-plt.plot(history.history['val_loss'])
-plt.title('Loss - ' + model_name)
-plt.ylabel('Loss')
-plt.xlabel('Epoch')
-plt.legend(['Train', 'Test'], loc='upper left')
-fig = plt.gcf()
-plt.show()
-fig.savefig(model_dir + model_name + ' Loss.png')
+# print("------------------------------------")
+# print('Build model...')
+# model = Sequential()
+# model.add(Embedding(vocabulary_size, embeddings_dimension, input_length=max_utterance_len, weights=[embedding_matrix], mask_zero=False))
+# model.add(LSTM(hidden_layer, dropout=0.3, return_sequences=True, kernel_initializer='random_uniform', recurrent_initializer='glorot_uniform'))
+# model.add(TimeDistributed(Dense(hidden_layer, input_shape=(max_utterance_len, hidden_layer))))
+# model.add(GlobalMaxPooling1D())
+# model.add(Dense(num_labels, activation='softmax'))
+#
+# optimizer = RMSprop(lr=learning_rate, decay=0.001)
+# model.compile(loss='categorical_crossentropy', optimizer=optimizer, metrics=['accuracy'])
+# print(model.summary())
+#
+# # Train the model
+# print("------------------------------------")
+# print("Training model...")
+#
+# start_time = time.time()
+# print("Training started: " + datetime.datetime.now().strftime("%b %d %T") + " for", num_epoch, "epochs")
+#
+# history = model.fit(train_x, train_y, epochs=num_epoch, batch_size=batch_size, validation_data=(test_x, test_y), verbose=2)
+#
+# # Save model and history
+# model.save(model_dir + model_name + '.hdf5', overwrite=True)
+# save_data(model_dir + model_name + ' History.pkl', history.history)
+#
+# end_time = time.time()
+# print("Training took " + str(('%.3f' % (end_time - start_time))) + " seconds for", num_epoch, "epochs")
+#
+# # Plot history for accuracy
+# plt.plot(history.history['acc'])
+# plt.plot(history.history['val_acc'])
+# plt.title('Accuracy - ' + model_name)
+# plt.ylabel('Accuracy')
+# plt.xlabel('Epoch')
+# plt.legend(['Train', 'Test'], loc='upper left')
+# fig = plt.gcf()
+# plt.show()
+# fig.savefig(model_dir + model_name + ' Accuracy.png')
+#
+# # Plot history for loss
+# plt.plot(history.history['loss'])
+# plt.plot(history.history['val_loss'])
+# plt.title('Loss - ' + model_name)
+# plt.ylabel('Loss')
+# plt.xlabel('Epoch')
+# plt.legend(['Train', 'Test'], loc='upper left')
+# fig = plt.gcf()
+# plt.show()
+# fig.savefig(model_dir + model_name + ' Loss.png')
 
 # Evaluate the model
 print("------------------------------------")
@@ -121,5 +121,8 @@ test_scores = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=2)
 print("Test data: ")
 print("Loss: ", test_scores[0], " Accuracy: ", test_scores[1])
 
-batch_prediction(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
-batch_prediction(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
+# batch_prediction(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
+# batch_prediction(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
+
+batch_prediction_confusion(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
+batch_prediction_confusion(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)

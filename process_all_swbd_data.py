@@ -1,4 +1,3 @@
-import itertools
 import nltk
 from operator import itemgetter
 from swda import CorpusReader
@@ -11,7 +10,10 @@ embeddings_dir = "embeddings/"
 text_file_path = resource_dir + "all_text.txt"
 corpus = CorpusReader('switchboard_data/')
 
+# Excluded dialogue act tags
 excluded_tags = ['x', '+']
+
+# Dimension for switchboard embeddings
 embedding_dimension = 300
 
 # Process switchboard csv's
@@ -26,7 +28,6 @@ da_tags = []
 for line in text_data:
     sentences.append(line.split("|")[0])
     da_tags.append(line.split("|")[1])
-
 
 # Generate tokenised utterances
 max_utterance_len = 0

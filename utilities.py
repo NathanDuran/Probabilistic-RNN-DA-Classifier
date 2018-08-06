@@ -1,5 +1,7 @@
+import itertools
 import pickle
 import numpy as np
+import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
 
@@ -198,10 +200,10 @@ def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=
             print("Predicted label: ", prediction)
             print("Prediction is: ", prediction_result)
 
-    print("------------------------------------")
-    print("Prediction ratios:")
-    for k in range(len(index_to_label)):
-        print('{:10}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ", '{:10}'.format(incorrect_labels[index_to_label[k]]))
+            print("------------------------------------")
+            print("Prediction ratios:")
+            for k in range(len(index_to_label)):
+                print('{:10}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ", '{:10}'.format(incorrect_labels[index_to_label[k]]))
 
     percent_correct = (100 / num_predictions) * correct
     percent_incorrect = (100 / num_predictions) * incorrect
@@ -212,6 +214,125 @@ def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=
     print("Incorrect: ", incorrect, " ", percent_incorrect, "%")
 
     return predictions
+
+
+def generate_confusion_matrix(data, predictions, metadata, verbose=False):
+
+    # Get utterance and label data
+    utterances = data['utterances']
+    labels = data['labels']
+
+    # Get metadata
+    index_to_label = metadata['index_to_label']
+    label_to_index = metadata['label_to_index']
+    num_labels = metadata['num_labels']
+    class_names = [class_name[0] for class_name in metadata['labels']]
+
+    # Predictions results
+    # correct = 0
+    # incorrect = 0
+    # correct_labels = {}
+    # incorrect_labels = {}
+    #
+    # for i in range(len(index_to_label)):
+    #     correct_labels[index_to_label[i]] = 0
+    #     incorrect_labels[index_to_label[i]] = 0
+
+    confusion_matrix = np.zeros(shape=(num_labels, num_labels), dtype=int)
+
+    # Get predictions
+    # predictions = model.predict(data_x, batch_size=batch_size, verbose=verbose)
+    # num_predictions = len(predictions)
+
+    for i in range(len(predictions)):
+
+        # Get prediction with highest probability
+        prediction = np.argmax(predictions[i])
+
+        # Add to matrix
+        confusion_matrix[label_to_index[labels[i]]][prediction] += 1
+
+        # Determine if correct
+        # prediction_result = False
+        # if index_to_label[prediction] == labels[i]:
+        #     correct += 1
+        #     correct_labels[labels[i]] += 1
+        # else:
+        #     incorrect += 1
+        #     incorrect_labels[labels[i]] += 1
+
+        if verbose:
+        #     print("------------------------------------")
+        #     print("Making prediction for utterance: ", utterances[i], "with label: ", labels[i])
+        #     print("Utterance embedding: ", data_x[i])
+        #     label_index = 0
+        #     for j in range(len(data_y[i])):
+        #         if data_y[i][j] > 0:
+        #             label_index = i
+        #     print("Label embedding: ", label_index)
+        #     print("Raw predictions: ", predictions)
+        #     print("Actual label: ", labels[i])
+        #     print("Predicted label: ", prediction)
+        #     print("Prediction is: ", prediction_result)
+
+            # Print confusion matrix
+            print("------------------------------------")
+            print("Confusion matrix:")
+            print('{:15}'.format(" "), end='')
+            for j in range(confusion_matrix.shape[1]):
+                print('{:15}'.format(index_to_label[j]), end='')
+            print()
+            for j in range(confusion_matrix.shape[0]):
+                print('{:15}'.format(index_to_label[j]), end='')
+                print('\n'.join([''.join(['{:10}'.format(item) for item in confusion_matrix[j]])]))
+
+    # # Print individual ratios
+    # print("------------------------------------")
+    # print("Prediction ratios:")
+    # for k in range(len(index_to_label)):
+    #     print('{:15}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ",
+    #           '{:10}'.format(incorrect_labels[index_to_label[k]]))
+
+    # # Calculate total correct
+    # percent_correct = (100 / num_predictions) * correct
+    # percent_incorrect = (100 / num_predictions) * incorrect
+    #
+    # print("------------------------------------")
+    # print("Made ", num_predictions, " predictions")
+    # print("Correct: ", correct, " ", percent_correct, "%")
+    # print("Incorrect: ", incorrect, " ", percent_incorrect, "%")
+    plt.figure()
+    plot_confusion_matrix(confusion_matrix[:10, :10], class_names[:10])
+    plt.show()
+    return confusion_matrix
+
+
+def plot_confusion_matrix(matrix, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+
+    if normalize:
+        matrix = matrix.astype('float') / matrix.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    plt.imshow(matrix, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = matrix.max() / 2.
+
+    for i, j in itertools.product(range(matrix.shape[0]), range(matrix.shape[1])):
+        plt.text(j, i, format(matrix[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if matrix[i, j] > thresh else "black")
+
+    plt.tight_layout()
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
 
 
 def read_file(path, verbose=True):

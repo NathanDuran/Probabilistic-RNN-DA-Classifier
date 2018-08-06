@@ -8,6 +8,7 @@ resource_dir = 'data/'
 file_path = resource_dir + batch_name + "_text.txt"
 corpus = CorpusReader('switchboard_data/')
 
+# Excluded dialogue act tags
 excluded_tags = ['x', '+']
 
 # Process switchboard csv's to text
