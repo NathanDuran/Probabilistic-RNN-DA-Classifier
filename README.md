@@ -67,4 +67,5 @@ This file is part of the repository developed by Christopher Potts, and is avail
 - Make plot loss and accuracy function
 - Plot loss and accuracy on same chart
 - Sort confusion matrix and plot function
-- Add documentation to functions
+- Add documentation to functions.
+- Link to paper.

@@ -176,6 +176,8 @@ def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=
 
         # Get prediction with highest probability
         prediction = index_to_label[np.argmax(predictions[i])]
+
+        # Determine if correct and increase counts
         if prediction == labels[i]:
             prediction_result = True
 
@@ -277,7 +279,7 @@ def generate_confusion_matrix(data, predictions, metadata, verbose=False):
 
             # Print confusion matrix
             print("------------------------------------")
-            print("Confusion matrix:")
+            print("Confusion Matrix:")
             print('{:15}'.format(" "), end='')
             for j in range(confusion_matrix.shape[1]):
                 print('{:15}'.format(index_to_label[j]), end='')
@@ -302,12 +304,42 @@ def generate_confusion_matrix(data, predictions, metadata, verbose=False):
     # print("Correct: ", correct, " ", percent_correct, "%")
     # print("Incorrect: ", incorrect, " ", percent_incorrect, "%")
     plt.figure()
-    plot_confusion_matrix(confusion_matrix[:10, :10], class_names[:10])
+    class_names = ['non-opinion', 'backchannel', 'opinion', 'abandoned', 'agree']
+    plot_confusion_matrix(confusion_matrix[:5, :5], class_names[:5], normalize=True)
     plt.show()
     return confusion_matrix
 
 
-def plot_confusion_matrix(matrix, classes, normalize=False, title='Confusion matrix', cmap=plt.cm.Blues):
+def plot_history(history, title='History'):
+
+    # Create figure and title
+    fig = plt.figure()
+    fig.set_size_inches(10, 5)
+    fig.suptitle(title, fontsize=14)
+
+    # Plot accuracy
+    acc = fig.add_subplot(121)
+    acc.plot(history['acc'])
+    acc.plot(history['val_acc'])
+    acc.set_ylabel('Accuracy')
+    acc.set_xlabel('Epoch')
+
+    # Plot loss
+    loss = fig.add_subplot(122)
+    loss.plot(history['loss'])
+    loss.plot(history['val_loss'])
+    loss.set_ylabel('Loss')
+    loss.set_xlabel('Epoch')
+    loss.legend(['Train', 'Test'], loc='upper right')
+
+    # Adjust layout to fit title
+    fig.tight_layout()
+    fig.subplots_adjust(top=0.15)
+
+    return fig
+
+
+def plot_confusion_matrix(matrix, classes, normalize=False, title='', cmap=plt.cm.Blues):
 
     if normalize:
         matrix = matrix.astype('float') / matrix.sum(axis=1)[:, np.newaxis]
@@ -331,8 +363,8 @@ def plot_confusion_matrix(matrix, classes, normalize=False, title='Confusion mat
                  color="white" if matrix[i, j] > thresh else "black")
 
     plt.tight_layout()
-    plt.ylabel('True label')
-    plt.xlabel('Predicted label')
+    # plt.ylabel('True label')
+    # plt.xlabel('Predicted label')
 
 
 def read_file(path, verbose=True):

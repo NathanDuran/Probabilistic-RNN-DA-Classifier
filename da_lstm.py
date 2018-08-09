@@ -40,7 +40,7 @@ batch_size = 200
 hidden_layer = 128
 learning_rate = 0.001
 num_epoch = 10
-model_name = model_name + \
+model_name = model_name + " -" + \
              " Epochs=" + str(num_epoch) + \
              " Hidden Layers=" + str(hidden_layer)
 
@@ -84,45 +84,27 @@ print("Epochs: ", num_epoch)
 # end_time = time.time()
 # print("Training took " + str(('%.3f' % (end_time - start_time))) + " seconds for", num_epoch, "epochs")
 #
-# # Plot history for accuracy
-# plt.plot(history.history['acc'])
-# plt.plot(history.history['val_acc'])
-# plt.title('Accuracy - ' + model_name)
-# plt.ylabel('Accuracy')
-# plt.xlabel('Epoch')
-# plt.legend(['Train', 'Test'], loc='upper left')
-# fig = plt.gcf()
-# plt.show()
-# fig.savefig(model_dir + model_name + ' Accuracy.png')
-#
-# # Plot history for loss
-# plt.plot(history.history['loss'])
-# plt.plot(history.history['val_loss'])
-# plt.title('Loss - ' + model_name)
-# plt.ylabel('Loss')
-# plt.xlabel('Epoch')
-# plt.legend(['Train', 'Test'], loc='upper left')
-# fig = plt.gcf()
-# plt.show()
-# fig.savefig(model_dir + model_name + ' Loss.png')
+# Plot training accuracy  and loss
+# fig = plot_history(history.history, model_name)
+# fig.show()
+# fig.savefig(model_dir + model_name + ' Accuracy and Loss.png')
 
 # Evaluate the model
 print("------------------------------------")
 print("Evaluating model...")
 model = load_model(model_dir + model_name + '.hdf5')
 
-# Validation set
-val_scores = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=2)
-print("Validation data: ")
-print("Loss: ", val_scores[0], " Accuracy: ", val_scores[1])
-
-# Test set
-test_scores = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=2)
-print("Test data: ")
-print("Loss: ", test_scores[0], " Accuracy: ", test_scores[1])
-
-# batch_prediction(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
+# # Validation set
+# val_scores = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=2)
+# print("Validation data: ")
+# print("Loss: ", val_scores[0], " Accuracy: ", val_scores[1])
+#
+# # Test set
+# test_scores = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=2)
+# print("Test data: ")
+# print("Loss: ", test_scores[0], " Accuracy: ", test_scores[1])
+#
+# val_predictions = batch_prediction(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
 # batch_prediction(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
-
-batch_prediction_confusion(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
-batch_prediction_confusion(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
+#
+# confusion_matrix = generate_confusion_matrix(val_data, val_predictions, metadata, verbose=False)
