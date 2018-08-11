@@ -64,8 +64,6 @@ Then run probabilistic_lstm.py specifying the same word frequency (word_frequenc
 This file is part of the repository developed by Christopher Potts, and is available [here](https://github.com/cgpotts/swda).
 
 ##TODO
-- Make plot loss and accuracy function
-- Plot loss and accuracy on same chart
 - Sort confusion matrix and plot function
 - Add documentation to functions.
 - Link to paper.

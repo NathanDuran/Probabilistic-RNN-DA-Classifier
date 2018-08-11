@@ -91,18 +91,30 @@ print("------------------------------------")
 print("Evaluating model...")
 model = load_model(model_dir + model_name + '.hdf5')
 
+# # Test set
+# test_scores = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=2)
+# print("Test data: ")
+# print("Loss: ", test_scores[0], " Accuracy: ", test_scores[1])
+
 # Validation set
-val_scores = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=2)
-print("Validation data: ")
-print("Loss: ", val_scores[0], " Accuracy: ", val_scores[1])
+# val_scores = model.evaluate(val_x, val_y, batch_size=batch_size, verbose=2)
+# print("Validation data: ")
+# print("Loss: ", val_scores[0], " Accuracy: ", val_scores[1])
 
-# Test set
-test_scores = model.evaluate(test_x, test_y, batch_size=batch_size, verbose=2)
-print("Test data: ")
-print("Loss: ", test_scores[0], " Accuracy: ", test_scores[1])
-
+test_predictions = batch_prediction(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
 val_predictions = batch_prediction(model, val_data, val_x, val_y, metadata, batch_size, verbose=False)
-batch_prediction(model, test_data, test_x, test_y, metadata, batch_size, verbose=False)
 
-confusion_matrix = generate_confusion_matrix(val_data, val_predictions, metadata, verbose=False)
+# Generate confusion matrix
+test_matrix = generate_confusion_matrix(test_data, test_predictions, metadata, verbose=False)
+val_matrix = generate_confusion_matrix(val_data, val_predictions, metadata, verbose=False)
+
+# Plot confusion matrices
+matrix_size = 5  # Number of elements of matrix to show
+# Full or short class names
+# class_names = ['non-opinion', 'backchannel', 'opinion', 'abandoned', 'agree']
+class_names = [class_name[0] for class_name in metadata['labels']]
+fig = plot_confusion_matrix(test_matrix[:matrix_size, :matrix_size], class_names[:matrix_size], 'Test', normalize=True)
+# fig = plot_confusion_matrices(test_matrix[:matrix_size, :matrix_size], val_matrix[:matrix_size, :matrix_size], class_names[:matrix_size], normalize=True)
+fig.show()
+fig.savefig(model_dir + model_name + ' Confusion Matrix.png', transparent=True)
 

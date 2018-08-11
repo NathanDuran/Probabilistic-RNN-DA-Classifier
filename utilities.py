@@ -4,10 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
+from mpl_toolkits.axes_grid1 import ImageGrid, make_axes_locatable
 
 
 def process_transcript_txt(transcript, excluded_tags=None):
-
     # Special characters for ignoring i.e. <laughter>
     special_chars = {'<', '>', '(', ')', '#'}
 
@@ -27,6 +27,7 @@ def process_transcript_txt(transcript, excluded_tags=None):
         # Join words for complete sentence
         utterance_sentence = " ".join(utterance)
 
+        # Print original and processed utterances
         # print(utt.transcript_index, " ", utt.text_words(filter_disfluency=True), " ", utt.damsl_act_tag())
         # print(utt.transcript_index, " ", utterance_sentence, " ", utt.damsl_act_tag())
 
@@ -43,7 +44,6 @@ def process_transcript_txt(transcript, excluded_tags=None):
 
 
 def process_batch_to_txt_file(corpus, resource_path, batch_name, excluded_tags=None):
-
     utterances = []
     labels = []
 
@@ -73,7 +73,6 @@ def process_batch_to_txt_file(corpus, resource_path, batch_name, excluded_tags=N
 
 
 def generate_embeddings(data, metadata, verbose=False):
-
     word_to_index = metadata['word_to_index']
     max_utterance_len = metadata['max_utterance_len']
 
@@ -111,7 +110,6 @@ def generate_embeddings(data, metadata, verbose=False):
 
 
 def generate_probabilistic_embeddings(data, frequency_data, metadata, verbose=False):
-
     freq_words = frequency_data['freq_words']
     probability_matrix = frequency_data['probability_matrix']
 
@@ -133,7 +131,6 @@ def generate_probabilistic_embeddings(data, frequency_data, metadata, verbose=Fa
         for j in range(len(utterances[i])):
             word = utterances[i][j]
             if word in freq_words:
-
                 utterance_embeddings[i][j] = probability_matrix[word_to_index[word]]
 
         tmp_label_embeddings.append(label_to_index[labels[i]])
@@ -150,7 +147,6 @@ def generate_probabilistic_embeddings(data, frequency_data, metadata, verbose=Fa
 
 
 def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=False):
-
     # Predictions results
     correct = 0
     incorrect = 0
@@ -205,7 +201,8 @@ def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=
             print("------------------------------------")
             print("Prediction ratios:")
             for k in range(len(index_to_label)):
-                print('{:10}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ", '{:10}'.format(incorrect_labels[index_to_label[k]]))
+                print('{:10}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ",
+                      '{:10}'.format(incorrect_labels[index_to_label[k]]))
 
     percent_correct = (100 / num_predictions) * correct
     percent_incorrect = (100 / num_predictions) * incorrect
@@ -219,99 +216,41 @@ def batch_prediction(model, data, data_x, data_y, metadata, batch_size, verbose=
 
 
 def generate_confusion_matrix(data, predictions, metadata, verbose=False):
-
-    # Get utterance and label data
-    utterances = data['utterances']
+    # Get label data
     labels = data['labels']
 
     # Get metadata
     index_to_label = metadata['index_to_label']
     label_to_index = metadata['label_to_index']
     num_labels = metadata['num_labels']
-    class_names = [class_name[0] for class_name in metadata['labels']]
 
-    # Predictions results
-    # correct = 0
-    # incorrect = 0
-    # correct_labels = {}
-    # incorrect_labels = {}
-    #
-    # for i in range(len(index_to_label)):
-    #     correct_labels[index_to_label[i]] = 0
-    #     incorrect_labels[index_to_label[i]] = 0
-
+    # Create empty confusion matrix
     confusion_matrix = np.zeros(shape=(num_labels, num_labels), dtype=int)
 
-    # Get predictions
-    # predictions = model.predict(data_x, batch_size=batch_size, verbose=verbose)
-    # num_predictions = len(predictions)
-
+    # For each prediction
     for i in range(len(predictions)):
-
         # Get prediction with highest probability
         prediction = np.argmax(predictions[i])
 
         # Add to matrix
         confusion_matrix[label_to_index[labels[i]]][prediction] += 1
 
-        # Determine if correct
-        # prediction_result = False
-        # if index_to_label[prediction] == labels[i]:
-        #     correct += 1
-        #     correct_labels[labels[i]] += 1
-        # else:
-        #     incorrect += 1
-        #     incorrect_labels[labels[i]] += 1
+    if verbose:
+        # Print confusion matrix
+        print("------------------------------------")
+        print("Confusion Matrix:")
+        print('{:15}'.format(" "), end='')
+        for j in range(confusion_matrix.shape[1]):
+            print('{:15}'.format(index_to_label[j]), end='')
+        print()
+        for j in range(confusion_matrix.shape[0]):
+            print('{:15}'.format(index_to_label[j]), end='')
+            print('\n'.join([''.join(['{:10}'.format(item) for item in confusion_matrix[j]])]))
 
-        if verbose:
-        #     print("------------------------------------")
-        #     print("Making prediction for utterance: ", utterances[i], "with label: ", labels[i])
-        #     print("Utterance embedding: ", data_x[i])
-        #     label_index = 0
-        #     for j in range(len(data_y[i])):
-        #         if data_y[i][j] > 0:
-        #             label_index = i
-        #     print("Label embedding: ", label_index)
-        #     print("Raw predictions: ", predictions)
-        #     print("Actual label: ", labels[i])
-        #     print("Predicted label: ", prediction)
-        #     print("Prediction is: ", prediction_result)
-
-            # Print confusion matrix
-            print("------------------------------------")
-            print("Confusion Matrix:")
-            print('{:15}'.format(" "), end='')
-            for j in range(confusion_matrix.shape[1]):
-                print('{:15}'.format(index_to_label[j]), end='')
-            print()
-            for j in range(confusion_matrix.shape[0]):
-                print('{:15}'.format(index_to_label[j]), end='')
-                print('\n'.join([''.join(['{:10}'.format(item) for item in confusion_matrix[j]])]))
-
-    # # Print individual ratios
-    # print("------------------------------------")
-    # print("Prediction ratios:")
-    # for k in range(len(index_to_label)):
-    #     print('{:15}'.format(index_to_label[k]), " ", '{:10}'.format(correct_labels[index_to_label[k]]), " ",
-    #           '{:10}'.format(incorrect_labels[index_to_label[k]]))
-
-    # # Calculate total correct
-    # percent_correct = (100 / num_predictions) * correct
-    # percent_incorrect = (100 / num_predictions) * incorrect
-    #
-    # print("------------------------------------")
-    # print("Made ", num_predictions, " predictions")
-    # print("Correct: ", correct, " ", percent_correct, "%")
-    # print("Incorrect: ", incorrect, " ", percent_incorrect, "%")
-    plt.figure()
-    class_names = ['non-opinion', 'backchannel', 'opinion', 'abandoned', 'agree']
-    plot_confusion_matrix(confusion_matrix[:5, :5], class_names[:5], normalize=True)
-    plt.show()
     return confusion_matrix
 
 
 def plot_history(history, title='History'):
-
     # Create figure and title
     fig = plt.figure()
     fig.set_size_inches(10, 5)
@@ -339,32 +278,96 @@ def plot_history(history, title='History'):
     return fig
 
 
-def plot_confusion_matrix(matrix, classes, normalize=False, title='', cmap=plt.cm.Blues):
+def plot_confusion_matrix(matrix, classes, title='', normalize=False, cmap='viridis'):
 
+    # Normalize input matrix values
     if normalize:
         matrix = matrix.astype('float') / matrix.sum(axis=1)[:, np.newaxis]
-        print("Normalized confusion matrix")
+        value_format = '.2f'
     else:
-        print('Confusion matrix, without normalization')
+        value_format = 'd'
 
-    plt.imshow(matrix, interpolation='nearest', cmap=cmap)
-    plt.title(title)
-    plt.colorbar()
-    tick_marks = np.arange(len(classes))
-    plt.xticks(tick_marks, classes, rotation=45)
-    plt.yticks(tick_marks, classes)
+    # Create figure with two axis and a colour bar
+    fig, ax = plt.subplots(ncols=1, figsize=(5, 5))
 
-    fmt = '.2f' if normalize else 'd'
+    # Generate axis and image
+    ax, im = plot_matrix_axis(matrix, ax, classes, title, value_format, cmap=cmap)
+
+    # Add colour bar
+    divider = make_axes_locatable(ax)
+    colorbar_ax = divider.append_axes("right", size="5%", pad=0.05)
+    fig.colorbar(im, cax=colorbar_ax)
+
+    # Set layout
+    fig.tight_layout()
+
+    return fig
+
+
+def plot_confusion_matrices(test_matrix, val_matrix, classes, title='', normalize=False, cmap='viridis'):
+
+    # Normalize input matrix values
+    if normalize:
+        test_matrix = test_matrix.astype('float') / test_matrix.sum(axis=1)[:, np.newaxis]
+        val_matrix = val_matrix.astype('float') / val_matrix.sum(axis=1)[:, np.newaxis]
+        value_format = '.2f'
+    else:
+        value_format = 'd'
+
+    # Create figure with two axis and a colour bar
+    fig, (ax, ax2, colorbar_ax) = plt.subplots(ncols=3, figsize=(10, 5), gridspec_kw={"width_ratios": [1, 1, 0.05]})
+
+    # Generate axis and image
+    ax, im = plot_matrix_axis(test_matrix, ax, classes, 'Test', value_format, cmap=cmap)
+    ax2, im2 = plot_matrix_axis(val_matrix, ax2, classes, 'Validation', value_format, cmap=cmap)
+
+    # Add colour bar
+    fig.colorbar(im, cax=colorbar_ax)
+
+    # Set layout
+    fig.tight_layout()
+
+    return fig
+
+
+def plot_matrix_axis(matrix, axis, classes, title='', value_format='d', cmap='viridis'):
+
+    # Create axis image
+    im = axis.imshow(matrix, interpolation='nearest', cmap=cmap)
+
+    # Set title
+    axis.set_title(title)
+
+    # Create tick marks and labels
+    axis.set_xticks(np.arange(len(classes)))
+    axis.set_yticks(np.arange(len(classes)))
+    axis.set_xticklabels(classes)
+    axis.set_yticklabels(classes)
+
+    # Set axis labels
+    axis.set_ylabel("Actual")
+    axis.set_xlabel("Predicted")
+
+    # Rotate the tick labels and set their alignment.
+    plt.setp(axis.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+
+    # Turn spines off and create white grid
+    for edge, spine in axis.spines.items():
+        spine.set_visible(False)
+    axis.set_xticks(np.arange(matrix.shape[1] + 1) - .5, minor=True)
+    axis.set_yticks(np.arange(matrix.shape[0] + 1) - .5, minor=True)
+    axis.grid(which="minor", color="w", linestyle='-', linewidth=2)
+    axis.tick_params(which="minor", bottom=False, left=False)
+
+    # Threshold determines colour of cell labels
     thresh = matrix.max() / 2.
-
+    # Loop over data dimensions and create text annotations
     for i, j in itertools.product(range(matrix.shape[0]), range(matrix.shape[1])):
-        plt.text(j, i, format(matrix[i, j], fmt),
-                 horizontalalignment="center",
-                 color="white" if matrix[i, j] > thresh else "black")
+        axis.text(j, i, format(matrix[i, j], value_format),
+                  ha="center", va="center",
+                  color="white" if matrix[i, j] < thresh else "black")
 
-    plt.tight_layout()
-    # plt.ylabel('True label')
-    # plt.xlabel('Predicted label')
+    return axis, im
 
 
 def read_file(path, verbose=True):
