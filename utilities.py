@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from keras.preprocessing.sequence import pad_sequences
 from keras.utils import to_categorical
-from mpl_toolkits.axes_grid1 import ImageGrid, make_axes_locatable
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 
 
 def process_transcript_txt(transcript, excluded_tags=None):
@@ -278,7 +278,12 @@ def plot_history(history, title='History'):
     return fig
 
 
-def plot_confusion_matrix(matrix, classes, title='', normalize=False, cmap='viridis'):
+def plot_confusion_matrix(matrix, classes,  title='', matrix_size=10, normalize=False, color='black', cmap='viridis'):
+
+    # Number of elements of matrix to show
+    if matrix_size:
+        matrix = matrix[:matrix_size, :matrix_size]
+        classes = classes[:matrix_size]
 
     # Normalize input matrix values
     if normalize:
@@ -291,12 +296,18 @@ def plot_confusion_matrix(matrix, classes, title='', normalize=False, cmap='viri
     fig, ax = plt.subplots(ncols=1, figsize=(5, 5))
 
     # Generate axis and image
-    ax, im = plot_matrix_axis(matrix, ax, classes, title, value_format, cmap=cmap)
+    ax, im = plot_matrix_axis(matrix, ax, classes, title, value_format, color=color, cmap=cmap)
 
     # Add colour bar
     divider = make_axes_locatable(ax)
     colorbar_ax = divider.append_axes("right", size="5%", pad=0.05)
-    fig.colorbar(im, cax=colorbar_ax)
+    color_bar = fig.colorbar(im, cax=colorbar_ax)
+    # Tick color
+    color_bar.ax.yaxis.set_tick_params(color=color)
+    # Tick labels
+    plt.setp(plt.getp(color_bar.ax.axes, 'yticklabels'), color=color)
+    # Edge color
+    color_bar.outline.set_edgecolor(color)
 
     # Set layout
     fig.tight_layout()
@@ -304,12 +315,18 @@ def plot_confusion_matrix(matrix, classes, title='', normalize=False, cmap='viri
     return fig
 
 
-def plot_confusion_matrices(test_matrix, val_matrix, classes, title='', normalize=False, cmap='viridis'):
+def plot_confusion_matrices(matrix_a, matrix_b, classes, title_a='', title_b='', matrix_size=10, normalize=False, color='black', cmap='viridis'):
+
+    # Number of elements of matrix to show
+    if matrix_size:
+        matrix_a = matrix_a[:matrix_size, :matrix_size]
+        matrix_b = matrix_b[:matrix_size, :matrix_size]
+        classes = classes[:matrix_size]
 
     # Normalize input matrix values
     if normalize:
-        test_matrix = test_matrix.astype('float') / test_matrix.sum(axis=1)[:, np.newaxis]
-        val_matrix = val_matrix.astype('float') / val_matrix.sum(axis=1)[:, np.newaxis]
+        matrix_a = matrix_a.astype('float') / matrix_a.sum(axis=1)[:, np.newaxis]
+        matrix_b = matrix_b.astype('float') / matrix_b.sum(axis=1)[:, np.newaxis]
         value_format = '.2f'
     else:
         value_format = 'd'
@@ -318,11 +335,18 @@ def plot_confusion_matrices(test_matrix, val_matrix, classes, title='', normaliz
     fig, (ax, ax2, colorbar_ax) = plt.subplots(ncols=3, figsize=(10, 5), gridspec_kw={"width_ratios": [1, 1, 0.05]})
 
     # Generate axis and image
-    ax, im = plot_matrix_axis(test_matrix, ax, classes, 'Test', value_format, cmap=cmap)
-    ax2, im2 = plot_matrix_axis(val_matrix, ax2, classes, 'Validation', value_format, cmap=cmap)
+    ax, im = plot_matrix_axis(matrix_a, ax, classes, title_a, value_format, color=color, cmap=cmap)
+    ax2, im2 = plot_matrix_axis(matrix_b, ax2, classes, title_b, value_format, color=color, cmap=cmap)
 
     # Add colour bar
     fig.colorbar(im, cax=colorbar_ax)
+    color_bar = fig.colorbar(im, cax=colorbar_ax)
+    # Tick color
+    color_bar.ax.yaxis.set_tick_params(color=color)
+    # Tick labels
+    plt.setp(plt.getp(color_bar.ax.axes, 'yticklabels'), color=color)
+    # Edge color
+    color_bar.outline.set_edgecolor(color)
 
     # Set layout
     fig.tight_layout()
@@ -330,23 +354,24 @@ def plot_confusion_matrices(test_matrix, val_matrix, classes, title='', normaliz
     return fig
 
 
-def plot_matrix_axis(matrix, axis, classes, title='', value_format='d', cmap='viridis'):
+def plot_matrix_axis(matrix, axis, classes, title='', value_format='d', color='black', cmap='viridis'):
 
     # Create axis image
     im = axis.imshow(matrix, interpolation='nearest', cmap=cmap)
 
     # Set title
-    axis.set_title(title)
+    axis.set_title(title, color=color)
 
     # Create tick marks and labels
     axis.set_xticks(np.arange(len(classes)))
     axis.set_yticks(np.arange(len(classes)))
-    axis.set_xticklabels(classes)
-    axis.set_yticklabels(classes)
+    axis.set_xticklabels(classes, color=color)
+    axis.set_yticklabels(classes, color=color)
+    axis.tick_params(color=color)
 
     # Set axis labels
-    axis.set_ylabel("Actual")
-    axis.set_xlabel("Predicted")
+    axis.set_ylabel("Actual", color=color)
+    axis.set_xlabel("Predicted", color=color)
 
     # Rotate the tick labels and set their alignment.
     plt.setp(axis.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
@@ -356,7 +381,7 @@ def plot_matrix_axis(matrix, axis, classes, title='', value_format='d', cmap='vi
         spine.set_visible(False)
     axis.set_xticks(np.arange(matrix.shape[1] + 1) - .5, minor=True)
     axis.set_yticks(np.arange(matrix.shape[0] + 1) - .5, minor=True)
-    axis.grid(which="minor", color="w", linestyle='-', linewidth=2)
+    axis.grid(which="minor", color='w', linestyle='-', linewidth=2)
     axis.tick_params(which="minor", bottom=False, left=False)
 
     # Threshold determines colour of cell labels
