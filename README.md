@@ -4,6 +4,7 @@
 ## Overview
 
 An LSTM for Dialogue Act (DA) classification on the Switchboard Dialogue Act Corpus.
+This is the implementation for the paper [Probabilistic Word Association for Dialogue Act Classification with Recurrent Neural Networks](https://www.springerprofessional.de/en/probabilistic-word-association-for-dialogue-act-classification-w/16055614).
 The repository contains two LSTM models implemented in [Keras](https://keras.io/).
 da_lstm.py uses utterance representations generated from pre-trained Word2Vec and GloVe word embeddings 
 and probabilistic_lstm.py uses utterance representations generated from keywords selected for their frequency association with
@@ -64,6 +65,4 @@ Then run probabilistic_lstm.py specifying the same word frequency (word_frequenc
 This file is part of the repository developed by Christopher Potts, and is available [here](https://github.com/cgpotts/swda).
 
 ##TODO
-- Sort confusion matrix and plot function
 - Add documentation to functions.
-- Link to paper.
