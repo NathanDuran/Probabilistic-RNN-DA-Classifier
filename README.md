@@ -63,6 +63,3 @@ Then run probabilistic_lstm.py specifying the same word frequency (word_frequenc
 - utilities.py - contains utility functions for saving and loading data and models as well as processing data for use at runtime.
 - swda.py - contains utility functions for loading and iterating the switchboard transcripts and utterances in .csv format.
 This file is part of the repository developed by Christopher Potts, and is available [here](https://github.com/cgpotts/swda).
-
-##TODO
-- Add documentation to functions.
