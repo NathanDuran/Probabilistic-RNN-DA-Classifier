@@ -4,5 +4,5 @@
 # Ignore the large witchboard and embeddigs data
 /switchboard_data/
 /embeddings/glove_Wiki_300dim.txt
-/embeddings/word2vec_swda_300dim.txt
+#/embeddings/word2vec_swda_300dim.txt
 /embeddings/word2vec_GoogleNews_300dim.bin
